@@ -1,0 +1,43 @@
+body, html {
+margin: 0;
+padding: 0;
+height: 100%;
+display: grid;
+}
+
+  /* Use a grid layout with two columns: a fixed width left column and a flexible right column */
+#layout {
+display: grid;
+grid-template-columns: 200px 1fr; /* Left column fixed at 250px, right takes remaining space */
+height: 100vh; /* Full screen height */
+}
+
+  /* Style the left menu container */
+#patient-container {
+background-color: #f0f0f0;
+padding: 10px;
+border-right: 1px solid #ccc;
+overflow-y: auto;
+}
+
+
+  /* Style the toolbar at the top of the content area */
+#demo-toolbar {
+background-color: #6687d9;
+height: 50;
+padding: 10px;
+color: white;
+}
+
+  /* Style the content area below the toolbar */
+#content {
+flex-grow: 1;
+background-color: #f9f9f9;
+padding: 10px;
+border: 1px solid #ccc;
+}
+
+#whole-content {
+display: grid;
+grid-template-columns: 1fr;
+}
