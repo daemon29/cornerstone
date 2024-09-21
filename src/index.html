@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
+    />
+    <link rel="stylesheet" href="assets/styles.css">
+  </head>
+  <body>
+    <!-- Main layout grid with two columns -->
+    <div id="layout">
+      <!-- Left menu container -->
+      <div id="patient-container">
+        <h3>Study List</h3>
+        <!-- Add patient list, menu items, etc. here -->
+        <ul id="study-list">
+        </ul>
+      </div>
+
+      <!-- Right content container -->
+      <div id="main-content">
+        <!-- Toolbar at the top -->
+        <div id="demo-toolbar">
+          <button id="measurement-button" class="icon-button" data-selected="false">
+            <img src="./assets/ruler.png" alt="Icon" class="icon-img">
+            <span class="button-text">Measurement</span>
+          </button>
+          <button id="crosshair-button" class="icon-button" data-selected="false">
+            <img src="./assets/crosshair.png" alt="Icon" class="icon-img">
+            <span class="button-text">Crosshair</span>
+          </button>
+          <button id="button-3d" class="icon-button" data-selected="false">
+            <img src="./assets/3d.png" alt="Icon" class="icon-img">
+            <span class="button-text">3D View</span>
+          </button>
+          <div class="icon-select-wrapper">
+            <img src="./assets/colour.png" alt="Icon" class="icon-img">
+            <select id="colormap-select" class="icon-select">
+            </select>
+          </div>
+        </div>
+        <!-- Main content area -->
+        <div id="whole-content">
+          <div id="content">
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

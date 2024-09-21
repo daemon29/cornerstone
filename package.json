@@ -1,0 +1,46 @@
+{
+  "name": "panther-image-review",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "watch": "webpack --watch",
+    "start": "webpack serve"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/http-proxy-middleware": "^1.0.0",
+    "@types/node": "^18.16.3",
+    "file-loader": "^6.2.0",
+    "ts-loader": "^9.4.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^4.6.4",
+    "url-loader": "^4.1.1",
+    "webpack": "5.81.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.13.3"
+  },
+  "dependencies": {
+    "@cornerstonejs/calculate-suv": "^1.1.0",
+    "@cornerstonejs/core": "^1.84.4",
+    "@cornerstonejs/dicom-image-loader": "^1.84.4",
+    "@cornerstonejs/streaming-image-volume-loader": "^1.84.4",
+    "@cornerstonejs/tools": "^1.84.4",
+    "@kitware/vtk.js": "^32.2.0",
+    "copy-webpack-plugin": "^12.0.2",
+    "cross-env": "^7.0.3",
+    "dcmjs": "^0.34.1",
+    "dicom-parser": "^1.8.21",
+    "dicomweb-client": "^0.10.4",
+    "html-webpack-plugin": "^5.5.0",
+    "http-proxy-middleware": "^3.0.2",
+    "lodash": "^4.17.21",
+    "lodash.get": "^4.4.2"
+  }
+}
