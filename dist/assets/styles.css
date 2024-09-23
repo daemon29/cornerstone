@@ -23,21 +23,130 @@ overflow-y: auto;
 
   /* Style the toolbar at the top of the content area */
 #demo-toolbar {
-background-color: #6687d9;
-height: 50;
-padding: 10px;
-color: white;
+  align-items: center;
+  background-color: #6687d9;
+  height: 4vh;
+  padding: 5px;
+  color: white;
+  display: flex;  /* Use flexbox layout */
+  justify-content: center;  /* Center items horizontally */
+  align-items: center;  /* Center items vertically */
+  gap: 5px;  /* Add space between items */
 }
 
   /* Style the content area below the toolbar */
+#whole-content {
+display: grid;
+padding: 8px;
+grid-template-columns: 1fr;
+gap: 8px;
+height: 93vh;
+}
 #content {
 flex-grow: 1;
 background-color: #f9f9f9;
-padding: 10px;
-border: 1px solid #ccc;
+height: 100%;
 }
 
-#whole-content {
-display: grid;
-grid-template-columns: 1fr;
+
+#master-viewport-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  width: calc(98vw-210px);
+  height: 100%;
+  gap: 8px;
 }
+
+[id^="viewport"] {
+  width: 100%;
+  height: 100%;
+  /* Your styles here */
+  border: 1px solid #6687d9;
+  border-radius: 5px;
+}
+[id^="viewport"][data-is-selected="true"] {
+  border: 3px solid #6687d9;
+}
+
+/* Style for not selected viewports */
+[id^="viewport"][data-is-selected="false"] {
+  border: 1px solid #6687d9;
+}
+
+/* Custom style for the unique icon button */
+.icon-button {
+  background-color: white; /* Background color for custom button */
+  color: black; /* Text color for custom button */
+  padding: 5px; /* Padding for the custom button */
+  display: flex; /* Flexbox for icon and text alignment */
+  align-items: center; /* Center align vertically */
+  border-radius: 5px; /* Rounded corners for custom button */
+}
+
+.icon-button img {
+  margin-right: 8px; /* Space between icon and text */
+}
+
+/* Style for the icon image inside the custom button */
+.icon-img {
+  width: 20px;
+  height: 20px;
+}
+
+/* Custom button hover effect */
+.icon-button:hover {
+  background-color: #556bb5; /* Darker color on hover */
+}
+/* Selected state */
+.icon-button[data-is-selected="true"] {
+  background-color: #556bb5;
+  color: white;
+}
+
+/* Unselected state */
+.icon-button[data-is-selected="false"] {
+  background-color: white;
+  color: black;
+}
+
+/* Hover effect - only applies when not selected */
+.icon-button[data-is-selected="false"]:hover {
+  background-color: #6687d9;
+  color: white
+}
+
+
+
+
+
+/* Custom Select Styles */
+.icon-select-wrapper {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  background-color: white;
+  border-radius: 5px;
+  border: solid 2px black;
+}
+
+.icon-select {
+  background-color: white;
+  color: black;
+  border: none;
+  margin-left: 8px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  appearance: none; /* Remove the default arrow on most browsers */
+}
+
+/* Custom Select hover effect */
+/* .icon-select-wrapper:hover {
+  background-color: #556bb5;
+}
+
+.icon-select-wrapper:hover .icon-select {
+  color: white;
+  background-color: #556bb5;
+} */

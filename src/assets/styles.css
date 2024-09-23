@@ -29,9 +29,28 @@ overflow-y: auto;
   padding: 5px;
   color: white;
   display: flex;  /* Use flexbox layout */
-  justify-content: center;  /* Center items horizontally */
+  justify-content: space-between;  /* Center items horizontally */
   align-items: center;  /* Center items vertically */
   gap: 5px;  /* Add space between items */
+}
+.toolbar-left{
+  display: flex;
+  gap: 5px;  /* Add space between items */
+  align-items: center;
+  justify-content: end;
+  width: 50%; /* Both sections take up equal space */
+}
+.toolbar-right {
+  display: flex;
+  gap: 5px;  /* Add space between items */
+  align-items: center;
+  justify-content: start;
+  width: 50%; /* Both sections take up equal space */
+}
+.toolbar-divider {
+  width: 1px;
+  height: 100%;
+  background-color: white;
 }
 
   /* Style the content area below the toolbar */
@@ -78,6 +97,8 @@ height: 100%;
 .icon-button {
   background-color: white; /* Background color for custom button */
   color: black; /* Text color for custom button */
+  font-weight: 600;
+  font-size: 16px;
   padding: 5px; /* Padding for the custom button */
   display: flex; /* Flexbox for icon and text alignment */
   align-items: center; /* Center align vertically */
@@ -90,8 +111,8 @@ height: 100%;
 
 /* Style for the icon image inside the custom button */
 .icon-img {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
 }
 
 /* Custom button hover effect */
@@ -117,9 +138,6 @@ height: 100%;
 }
 
 
-
-
-
 /* Custom Select Styles */
 .icon-select-wrapper {
   display: flex;
@@ -129,24 +147,42 @@ height: 100%;
   border-radius: 5px;
   border: solid 2px black;
 }
+/* Selected state */
+.icon-select-wrapper[data-is-selected="true"] {
+  background-color: #556bb5;
+  color: white;
+}
 
-.icon-select {
+/* Unselected state */
+.icon-select-wrapper[data-is-selected="false"] {
   background-color: white;
   color: black;
+}
+
+.icon-select {
   border: none;
   margin-left: 8px;
   border-radius: 5px;
   font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
   appearance: none; /* Remove the default arrow on most browsers */
+  background-color: transparent; /* Make select background transparent */
+}
+/* Ensure the select element takes full width */
+.icon-select-wrapper select:focus {
+  outline: none; /* Remove focus outline */
 }
 
-/* Custom Select hover effect */
-/* .icon-select-wrapper:hover {
-  background-color: #556bb5;
-}
+.slider-container {
+  background-color: white;
+  color: black;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 7px; 
+  display: flex; 
+  align-items: center; 
+  border-radius: 5px; 
+  border: solid 2px black;
 
-.icon-select-wrapper:hover .icon-select {
-  color: white;
-  background-color: #556bb5;
-} */
+}

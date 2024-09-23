@@ -18,8 +18,10 @@ import {
 } from './utils/demo/helpers';
 import * as cornerstoneTools from '@cornerstonejs/tools';
 import { mat4 } from 'gl-matrix';
-import vtkColormaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
-
+import { loadMeasurementTool } from './measurementTool';
+import { loadWindowLevelTool } from './windowTool';
+import { loadColorMapTool, setColorMapSelect } from './colormapTool';
+import { loadCrosshairsTool } from './crosshairTool';
 const {
   ToolGroupManager,
   Enums: csToolsEnums,
@@ -32,6 +34,10 @@ const {
   VolumeRotateMouseWheelTool,
   CrosshairsTool,
   TrackballRotateTool,
+  LengthTool, 
+  HeightTool, 
+  AngleTool, 
+  EraserTool
 } = cornerstoneTools;
 
 const { MouseBindings } = csToolsEnums;
@@ -70,32 +76,30 @@ let selectedElement : HTMLElement;
 let is3DOpen = false;
 
 // Color Map Section
-let colorMaps = [];
-const currentSelectColormapNames = ['Grayscale', 'Black-Body Radiation'];
-let colorMapSelect : HTMLSelectElement;
+const currentSelectColormapNames = ['Grayscale', '2hot'];
 
 let selectedStudy;
 let studyList = [
-{
-  wadoRsRoot: 'http://127.0.0.1:800/dicom-web',
-  CT1StudyInstanceUID: '1.2.156.112736.1.2.2.1097583607.12296.1695818166.610',
-  CT1SeriesInstanceUID: '1.2.840.113729.1.4237.9996.2023.9.15.17.48.36.250.10076',
-  CT1Date: '02/24/2024 10:05 AM',
-  CT2StudyInstanceUID: '1.2.156.112736.1.2.2.1279709348.4668.1704737711.457',
-  CT2SeriesInstanceUID: '1.2.156.112736.1.3.2.1279709348.4668.1704737828.462',
-  CT2Date: '02/29/2024 01:15 PM',
-  CT2RegSeriesInstanceUID:'1.2.156.112736.1.3.2.1279709348.4668.1704737855.630',
-},
-{
-  wadoRsRoot: 'http://127.0.0.1:800/dicom-web',
-  CT1StudyInstanceUID: '1.2.156.112736.1.2.2.1097583607.12296.1695818166.610',
-  CT1SeriesInstanceUID: '1.2.840.113729.1.4237.9996.2023.9.15.17.48.36.250.10076',
-  CT1Date: '02/24/2024 10:05 AM',
-  CT2StudyInstanceUID: '1.2.156.112736.1.2.2.1279709348.4668.1704737390.276',
-  CT2SeriesInstanceUID: '1.2.156.112736.1.3.2.1279709348.4668.1704737485.281',
-  CT2Date: '03/07/2024 10:26 AM',
-  CT2RegSeriesInstanceUID:'1.2.156.112736.1.3.2.1279709348.4668.1704737512.449',
-}
+  {
+    wadoRsRoot: 'http://localhost:800/dicom-web',
+    CT1StudyInstanceUID: '1.2.156.112736.1.2.2.1097583607.12296.1695818166.610',
+    CT1SeriesInstanceUID: '1.2.840.113729.1.4237.9996.2023.9.15.17.48.36.250.10076',
+    CT1Date: '02/24/2024 10:05 AM',
+    CT2StudyInstanceUID: '1.2.156.112736.1.2.2.1279709348.4668.1704737711.457',
+    CT2SeriesInstanceUID: '1.2.156.112736.1.3.2.1279709348.4668.1704737828.462',
+    CT2Date: '02/29/2024 01:15 PM',
+    CT2RegSeriesInstanceUID:'1.2.156.112736.1.3.2.1279709348.4668.1704737855.630',
+  },
+  {
+    wadoRsRoot: 'http://localhost:800/dicom-web',
+    CT1StudyInstanceUID: '1.2.156.112736.1.2.2.1097583607.12296.1695818166.610',
+    CT1SeriesInstanceUID: '1.2.840.113729.1.4237.9996.2023.9.15.17.48.36.250.10076',
+    CT1Date: '02/24/2024 10:05 AM',
+    CT2StudyInstanceUID: '1.2.156.112736.1.2.2.1279709348.4668.1704737390.276',
+    CT2SeriesInstanceUID: '1.2.156.112736.1.3.2.1279709348.4668.1704737485.281',
+    CT2Date: '03/07/2024 10:26 AM',
+    CT2RegSeriesInstanceUID:'1.2.156.112736.1.3.2.1279709348.4668.1704737512.449',
+  }
 ]
 
 const axialCameraSynchronizerId = 'AXIAL_CAMERA_SYNCHRONIZER_ID';
@@ -115,7 +119,7 @@ const viewportIds = {
   THREED: '3D_VIEWPORT',
 };
 
-const optionsValues = [WindowLevelTool.toolName, CrosshairsTool.toolName];
+const optionsValues = [WindowLevelTool.toolName, CrosshairsTool.toolName, 'MeasureTool'];
 
 const resizeObserver = new ResizeObserver(() => {
   renderingEngine = getRenderingEngine(renderingEngineId);
@@ -125,67 +129,65 @@ const resizeObserver = new ResizeObserver(() => {
 });
 
 
-function initToolBar(){
-  addDropdownToToolbar({
-    options: { values: optionsValues, defaultValue: WindowLevelTool.toolName },
-    id: 'select-toolbar',
-    onSelectedValueChange: (toolNameAsStringOrNumber) => {
-      const toolName = String(toolNameAsStringOrNumber);
+function toogleSelectTool(toolName){
+  optionsValues.forEach(element => {
+    console.log(element);
+    const button = document.getElementById(element);
+    if(element==toolName){
+      button.dataset.isSelected = 'true';
+    }else {
+      button.dataset.isSelected = 'false';
+    }
+  });
+}
+function onSelectTool(toolName:string){
+  switch (toolName) {
+    case WindowLevelTool.toolName:
+      [ctToolGroupId, ptToolGroupId, fusionToolGroupId].forEach((toolGroupId) => {
+        const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
+        toolGroup.setToolPassive(CrosshairsTool.toolName);
+        toolGroup.setToolActive(WindowLevelTool.toolName, {
+          bindings: [{ mouseButton: MouseBindings.Primary }],
+        });
+      });
+      toogleSelectTool(toolName)
+      break;
+    case CrosshairsTool.toolName:
+      [ctToolGroupId, ptToolGroupId, fusionToolGroupId].forEach((toolGroupId) => {
+        const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
+        toolGroup.setToolDisabled(WindowLevelTool.toolName);
+        toolGroup.setToolActive(CrosshairsTool.toolName, {
+          bindings: [{ mouseButton: MouseBindings.Primary }],
+        });
+      });
+      toogleSelectTool(toolName)
+      break;
+    case LengthTool.toolName:
+    case HeightTool.toolName:
+    case AngleTool.toolName:
+    case EraserTool.toolName:
+      const measureTools = [LengthTool.toolName,HeightTool.toolName,AngleTool.toolName,EraserTool.toolName];
+      measureTools.indexOf(toolName) !== -1 && measureTools.splice(measureTools.indexOf(toolName), 1); // remove tool name from the list
 
       [ctToolGroupId, ptToolGroupId, fusionToolGroupId].forEach((toolGroupId) => {
         const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
-
-        // Set the other tools disabled so we don't get conflicts.
-        // Note we only strictly need to change the one which is currently active.
-
-        if (toolName === WindowLevelTool.toolName) {
-          // Set crosshairs passive so they are still interactable
-          toolGroup.setToolPassive(CrosshairsTool.toolName);
-          toolGroup.setToolActive(WindowLevelTool.toolName, {
-            bindings: [{ mouseButton: MouseBindings.Primary }],
-          });
-        } else {
-          toolGroup.setToolDisabled(WindowLevelTool.toolName);
-          toolGroup.setToolActive(CrosshairsTool.toolName, {
-            bindings: [{ mouseButton: MouseBindings.Primary }],
-          });
-        }
+        toolGroup.setToolDisabled(CrosshairsTool.toolName);
+        toolGroup.setToolDisabled(WindowLevelTool.toolName);
+        measureTools.forEach(element => {
+          toolGroup.setToolPassive(element);
+        });
+        toolGroup.setToolActive(toolName, {
+          bindings: [{ mouseButton: MouseBindings.Primary }],
+        });
       });
-    },
-  });
-  addSliderToToolbar({
-    title: 'opacity',
-    id: 'slider-opacity',
-    step: 1,
-    range: [0, 255],
-    defaultValue: opacity,
-    onSelectedValueChange: (value) => {
-      opacity = Number(value) / 255;
-      const axialFusionViewport = renderingEngine.getViewport(viewportIds.FUSION.AXIAL);
-      const coronalFusionViewport = renderingEngine.getViewport(viewportIds.FUSION.CORONAL);
-      const sagittalFusionViewport = renderingEngine.getViewport(viewportIds.FUSION.SAGITTAL);
-      const properties = {
-        colormap: {
-          opacity: opacity,  // Applying the opacity uniformly
-        },
-      };
-      axialFusionViewport.setProperties(properties, ptVolumeId);
-      coronalFusionViewport.setProperties(properties, ptVolumeId);
-      sagittalFusionViewport.setProperties(properties, ptVolumeId);
-      renderingEngine.render();
-    },
-  });
-  loadColorMapTool();
-  addButtonToToolbar({
-    title: '3D View',
-    id: 'button-3d',
-    onClick: () => {
-      open3DView();
-    },
-  });
+      toogleSelectTool('MeasureTool')
+      break;
+    default:
+      break;
+  }
 }
 
-async function open3DView(){
+async function select3DView(){
   const wholeContent = document.getElementById('whole-content');
   const button3D = document.getElementById('button-3d');
   if(is3DOpen){
@@ -225,6 +227,49 @@ async function load3DVolume(volumeId){
   });
   threeD.render();
 }
+function initToolBar(){
+  initLeftToolBar();
+  initRightToolBar();
+}
+function initLeftToolBar(){
+  loadMeasurementTool(onSelectTool);
+  loadWindowLevelTool(onSelectTool);
+  loadCrosshairsTool(onSelectTool);
+}
+function initRightToolBar(){
+  addSliderToToolbar({
+    title: 'opacity',
+    id: 'slider-opacity',
+    step: 1,
+    range: [0, 255],
+    defaultValue: opacity,
+    onSelectedValueChange: (value) => {
+      opacity = Number(value) / 255;
+      const axialFusionViewport = renderingEngine.getViewport(viewportIds.FUSION.AXIAL);
+      const coronalFusionViewport = renderingEngine.getViewport(viewportIds.FUSION.CORONAL);
+      const sagittalFusionViewport = renderingEngine.getViewport(viewportIds.FUSION.SAGITTAL);
+      const properties = {
+        colormap: {
+          opacity: opacity,  // Applying the opacity uniformly
+        },
+      };
+      axialFusionViewport.setProperties(properties, ptVolumeId);
+      coronalFusionViewport.setProperties(properties, ptVolumeId);
+      sagittalFusionViewport.setProperties(properties, ptVolumeId);
+      renderingEngine.render();
+    },
+  });
+  loadColorMapTool(onColorSelection);
+  addButtonToToolbar({
+    title: '3D View',
+    id: 'button-3d',
+    onClick: () => {
+      select3DView();
+    },
+  });
+}
+
+
 function initViewPort(){
   const viewportGrid = document.createElement('div');
   viewportGrid.id = 'master-viewport-grid';
@@ -397,10 +442,10 @@ function selectGridElement(element :HTMLElement){
   selectedElement.dataset.isSelected= 'true';
   let viewPortSelect = getViewPortByElement(element.id);
   if(viewPortSelect==ViewportTypeEnum.CTVIEWPORT){
-    colorMapSelect.value = currentSelectColormapNames[ViewportTypeEnum.CTVIEWPORT];
+    setColorMapSelect(currentSelectColormapNames[ViewportTypeEnum.CTVIEWPORT]);
   }
   if(viewPortSelect==ViewportTypeEnum.PTVIEWPORT){
-    colorMapSelect.value = currentSelectColormapNames[ViewportTypeEnum.PTVIEWPORT];
+    setColorMapSelect(currentSelectColormapNames[ViewportTypeEnum.PTVIEWPORT])
   }
 }
 
@@ -434,6 +479,11 @@ function setUpToolGroups() {
   cornerstoneTools.addTool(VolumeRotateMouseWheelTool);
   cornerstoneTools.addTool(CrosshairsTool);
   cornerstoneTools.addTool(TrackballRotateTool);
+  cornerstoneTools.addTool(LengthTool);
+  cornerstoneTools.addTool(AngleTool);
+  cornerstoneTools.addTool(HeightTool);
+  cornerstoneTools.addTool(EraserTool);
+
 
   // Define tool groups for the main 9 viewports.
   // Crosshairs currently only supports 3 viewports for a toolgroup due to the
@@ -459,6 +509,10 @@ function setUpToolGroups() {
     toolGroup.addTool(PanTool.toolName);
     toolGroup.addTool(ZoomTool.toolName);
     toolGroup.addTool(StackScrollMouseWheelTool.toolName);
+    toolGroup.addTool(LengthTool.toolName);
+    toolGroup.addTool(AngleTool.toolName);
+    toolGroup.addTool(HeightTool.toolName);
+    toolGroup.addTool(EraserTool.toolName);
     toolGroup.addTool(CrosshairsTool.toolName, {
       getReferenceLineColor,
       getReferenceLineControllable,
@@ -497,6 +551,10 @@ function setUpToolGroups() {
   fusionToolGroup.addTool(PanTool.toolName);
   fusionToolGroup.addTool(ZoomTool.toolName);
   fusionToolGroup.addTool(StackScrollMouseWheelTool.toolName);
+  fusionToolGroup.addTool(LengthTool.toolName);
+  fusionToolGroup.addTool(AngleTool.toolName);
+  fusionToolGroup.addTool(HeightTool.toolName);
+  fusionToolGroup.addTool(EraserTool.toolName);
   fusionToolGroup.addTool(CrosshairsTool.toolName, {
     getReferenceLineColor,
     getReferenceLineControllable,
@@ -513,13 +571,13 @@ function setUpToolGroups() {
   fusionToolGroup.addTool(WindowLevelTool.toolName);
 
   [ctToolGroup, ptToolGroup, fusionToolGroup].forEach((toolGroup) => {
-    toolGroup.setToolActive(WindowLevelTool.toolName, {
-      bindings: [
-        {
-          mouseButton: MouseBindings.Primary, // Left Click
-        },
-      ],
-    });
+    // toolGroup.setToolActive(WindowLevelTool.toolName, {
+    //   bindings: [
+    //     {
+    //       mouseButton: MouseBindings.Primary, // Left Click
+    //     },
+    //   ],
+    // });
     toolGroup.setToolActive(PanTool.toolName, {
       bindings: [
         {
@@ -830,11 +888,7 @@ function initializeCameraSync(renderingEngine) {
 }
 
 function initCameraSynchronization(sViewport, tViewport) {
-  // Initialise the sync as they viewports will have
-  // Different initial zoom levels for viewports of different sizes.
-
   const camera = sViewport.getCamera();
-
   tViewport.setCamera(camera);
 }
 
@@ -904,22 +958,7 @@ function setViewportColormap(viewportIds : string[], volumeId, colormapName) {
   });
 
 }
-// Load Color Map tool
-function loadColorMapTool(){
-  colorMaps = vtkColormaps.rgbPresetNames.map((presetName) =>
-    vtkColormaps.getPresetByName(presetName));
-    
-  colorMapSelect = document.getElementById('colormap-select') as HTMLSelectElement;
-  colorMaps.forEach(element => {
-    var option =  document.createElement('option');
-    option.text = element.Name;
-    option.value =element.Name;
-    colorMapSelect.appendChild(option);
-  });
-  colorMapSelect.onchange = function() {
-    onColorSelection(colorMapSelect.value);
-  };
-}
+
 
 async function run() {
   // Init Cornerstone and related libraries
