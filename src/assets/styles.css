@@ -8,14 +8,14 @@ display: grid;
   /* Use a grid layout with two columns: a fixed width left column and a flexible right column */
 #layout {
 display: grid;
-grid-template-columns: 200px 1fr; /* Left column fixed at 250px, right takes remaining space */
+grid-template-columns: 250px 1fr; /* Left column fixed at 250px, right takes remaining space */
 height: 100vh; /* Full screen height */
 }
 
   /* Style the left menu container */
-#patient-container {
+#left-menu {
 background-color: #f0f0f0;
-padding: 10px;
+padding: 8px;
 border-right: 1px solid #ccc;
 overflow-y: auto;
 }
@@ -30,7 +30,6 @@ overflow-y: auto;
   color: white;
   display: flex;  /* Use flexbox layout */
   justify-content: space-between;  /* Center items horizontally */
-  align-items: center;  /* Center items vertically */
   gap: 5px;  /* Add space between items */
 }
 .toolbar-left{
@@ -176,6 +175,7 @@ height: 100%;
 
 .slider-container {
   background-color: white;
+  width: 200px;
   color: black;
   font-weight: 600;
   font-size: 16px;
@@ -184,5 +184,166 @@ height: 100%;
   align-items: center; 
   border-radius: 5px; 
   border: solid 2px black;
+}
 
+/* Study list container styling */
+.study-list-container {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  max-width: 250px;
+  border-radius: 8px;
+  overflow-y: auto; /* Allow vertical scrolling if content exceeds the height */
+}
+
+.study-item {
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  padding: 8px;
+  transition: background-color 0.3s, border-color 0.3s; /* Add smooth transition for hover/selection */
+}
+
+/* Style for selected study-item */
+.study-item[data-is-selected="true"] {
+  border: 2px solid #6687d9; /* Highlight the border color when selected */
+}
+
+/* Optional: Add a hover effect */
+.study-item:hover {
+  background-color: #e6e6e6; /* Light grey on hover */
+}
+
+
+/* Study header section */
+.study-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.study-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  flex: 1; /* Take as much space as possible */
+}
+
+.study-date {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Imaging list styling */
+.series-list {
+  margin-bottom: 8px;
+}
+
+.image-item {
+  padding: 5px 0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #555;
+  border-bottom: 1px solid #eee;
+}
+
+.image-date {
+  width: 30%;
+  text-align: left;
+  font-size: 12px;
+  color: #888;
+}
+
+.image-modality {
+  width: 70%;
+  text-align: right;
+  font-size: 12px;
+  color: #444;
+}
+
+/* Study footer styling */
+.study-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  color: #666;
+}
+
+.referring-physician {
+  font-weight: bold;
+  color: #333;
+}
+
+.accession-number {
+  font-weight: 600;
+  color: #555;
+}
+
+/* Patient info section */
+.patient-info {
+  font-size: 14px;
+  color: #333;
+  background-color: #f5f5f5;
+  padding: 8px; /* Reduced padding */
+  border-radius: 6px; /* Smaller border-radius */
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); /* Reduced shadow size */
+  font-family: Arial, sans-serif;
+  line-height: 1.25;
+  margin-bottom: 16px;
+}
+
+/* Patient name */
+.patient-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #222;
+}
+
+.patient-id{
+  font-size: 14px;
+  font-weight: bold; /* Make the dynamic part bold */
+}
+
+/* Patient date of birth */
+.patient-dob {
+  font-size: 14px;
+  color: #555;
+}
+
+/* Patient age and gender */
+.patient-age-gender {
+  font-size: 14px;
+  color: #666;
+  font-weight: 600;
+}
+
+.page-pagination{
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.page-pagination a {
+  color: black;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  text-decoration: none;
+  border-radius: 5px;
+  border: 1px solid #ddd; /* Gray */
+  background-color: #f5f5f5;
+  padding-block: 4px;
+
+}
+.page-pagination a.active {
+  background-color: #6687d9;
+  color: white;
+}
+.page-pagination a:hover:not(.active) {
+  background-color: #e6e6e6; /* Light grey on hover */
 }

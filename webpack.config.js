@@ -4,9 +4,12 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');  // Add this line
 
 module.exports = {
   mode: 'development',  // You can set 'production' for production builds
-  entry: './src/index.ts',
+  entry: {
+    studyPage: './src/modules/studyPage/index.ts',
+    seriePage: './src/modules/seriePage/index.ts'
+  },
   output: {
-    filename: 'main.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
     clean: true, // Clean the output directory before emitting new files
   },
@@ -35,8 +38,17 @@ module.exports = {
     asyncWebAssembly: true,  // Enable async WebAssembly support
   },
   plugins: [
+    // Page 1 HTML
     new HtmlWebpackPlugin({
-      template: './src/index.html', // Point this to your index.html file
+      filename: 'index.html', // This will be the default page
+      template: './src/modules/studyPage/index.html',
+      chunks: ['studyPage'],  // Only include Page 1's JS file
+    }),
+    // Page 2 HTML
+    new HtmlWebpackPlugin({
+      filename: 'seriePage/index.html',  // Output for Page 2
+      template: './src/modules/seriePage/index.html',
+      chunks: ['seriePage'],  // Only include Page 2's JS file
     }),
     new CopyWebpackPlugin({
       patterns: [

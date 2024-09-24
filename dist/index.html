@@ -7,38 +7,61 @@
       content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
     />
     <link rel="stylesheet" href="assets/styles.css">
-  <script defer src="main.js"></script></head>
+  <script defer src="studyPage.js"></script></head>
   <body>
     <!-- Main layout grid with two columns -->
     <div id="layout">
       <!-- Left menu container -->
-      <div id="patient-container">
-        <h3>Study List</h3>
-        <!-- Add patient list, menu items, etc. here -->
-        <ul id="study-list">
-        </ul>
+      <div id="left-menu">
+        <div class="page-pagination">
+          <a href="#" class="active">Studies</a>
+          <a href="#">Series</a>
+        </div>
+        <div id="patient-info-container" class="patient-info">
+        </div>
+        <div id="study-list-container" class="study-list-container">
+        </div>
       </div>
-
       <!-- Right content container -->
       <div id="main-content">
         <!-- Toolbar at the top -->
         <div id="demo-toolbar">
-          <button id="measurement-button" class="icon-button" data-selected="false">
-            <img src="./assets/ruler.png" alt="Icon" class="icon-img">
-            <span class="button-text">Measurement</span>
-          </button>
-          <button id="crosshair-button" class="icon-button" data-selected="false">
-            <img src="./assets/crosshair.png" alt="Icon" class="icon-img">
-            <span class="button-text">Crosshair</span>
-          </button>
-          <button id="button-3d" class="icon-button" data-selected="false">
-            <img src="./assets/3d.png" alt="Icon" class="icon-img">
-            <span class="button-text">3D View</span>
-          </button>
-          <div class="icon-select-wrapper">
-            <img src="./assets/colour.png" alt="Icon" class="icon-img">
-            <select id="colormap-select" class="icon-select">
-            </select>
+          <div id="toolbar-left" class="toolbar-left">
+            <div id ="MeasureTool" class="icon-select-wrapper">
+              <img id="measure-img" src="./assets/ruler.png" alt="Icon" class="icon-img">
+              <select id="measure-select" class="icon-select">
+                <option value="" disabled selected>Measure</option>
+              </select>
+            </div>
+            <button id="Crosshairs" class="icon-button">
+              <img src="./assets/crosshair.png" alt="Icon" class="icon-img">
+              <span class="button-text">Crosshair</span>
+            </button>                
+            <button id="WindowLevel" class="icon-button">
+              <img src="./assets/contrast.png" alt="Icon" class="icon-img">
+              <span class="button-text">Levels</span>
+            </button>
+          </div>
+          <div class="toolbar-divider"></div>
+          <div id="toolbar-right" class="toolbar-right">
+            <div class="icon-select-wrapper">
+              <img src="./assets/colour.png" alt="Icon" class="icon-img">
+              <select id="colormap-select" class="icon-select">
+                <option value="" disabled selected>Select color map</option>
+              </select>
+            </div>
+            <div class="slider-container" style="display: flex;">
+              <span>Opacity</span>
+              <input id="slider-opacity" type="range"></input>
+            </div>
+            <button id="contour-button" class="icon-button" data-selected="false">
+              <img src="./assets/contour.png" alt="Icon" class="icon-img">
+              <span class="button-text">Contour</span>
+            </button>
+            <button id="button-3d" class="icon-button" data-selected="false">
+              <img src="./assets/3d.png" alt="Icon" class="icon-img">
+              <span class="button-text">3D View</span>
+            </button>
           </div>
         </div>
         <!-- Main content area -->
