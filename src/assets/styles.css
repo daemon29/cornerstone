@@ -66,7 +66,6 @@ background-color: #f9f9f9;
 height: 100%;
 }
 
-
 #master-viewport-grid{
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -346,4 +345,25 @@ height: 100%;
 }
 .page-pagination a:hover:not(.active) {
   background-color: #e6e6e6; /* Light grey on hover */
+}
+
+
+#whole-content-series {
+  display: grid;
+  padding: 8px;
+  grid-template-rows: 1fr 1fr;
+  gap: 8px;
+  height: 93vh;
+}
+#content-series {
+  flex-grow: 1;
+  height: 100%;
+  display: table-column;
+}
+#master-viewport-grid-series{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  width: 100%;
+  height: 100%;
+  gap: 8px;
 }

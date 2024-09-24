@@ -1,3 +1,4 @@
+import { getRenderingEngine, Types } from "@cornerstonejs/core";
 import { ViewportTypeEnum } from "./enums";
 
 function createDivElement({
@@ -22,7 +23,7 @@ function createDivElement({
     return element;
   }
 // Load Study List
-function setStudyListView(studyList,onStudySelect: (selectedStudy: number) => void){
+function setStudyListView(studyList, onStudySelect: (selectedStudy: number) => void){
     const studyListContainer = document.getElementById('study-list-container');
     for (let index = 0; index < studyList.length; index++) {
       const study = studyList[index];
@@ -107,10 +108,61 @@ function getViewPortByElement(elementID: string){
   }
   return ViewportTypeEnum.FUSIONVIEWPORT;
 }
+
+function loadSeriesList(studyList, onStudySelect: (selectedStudy: number) => void){
+  const studyListContainer = document.getElementById('study-list-container');
+    for (let index = 0; index < studyList.length; index++) {
+      const study = studyList[index];
+      // Setup study item
+      const studyItem = createDivElement({className:'study-item', id:`study-item-${index}`});
+      // Setup study header
+      const studyHeader = createDivElement({ className:'study-header'});
+      const studyTitle = createDivElement({className:'study-title', textContent:study.Title});
+      const studyDate = createDivElement({className:'study-date', textContent:study.StudyDate});
+      studyHeader.appendChild(studyTitle);
+      studyHeader.appendChild(studyDate);
+      // Setup Series List
+      const seriesList = createDivElement({className:'series-list'});
+      study.SeriesList.forEach(serie => {
+        const imageItem = createDivElement({className:'image-item'});
+        const imageDate = createDivElement({className:'image-date', textContent:`${serie.SeriesDate} ${serie.SeriesTime}`});
+        const imageModality = createDivElement({className:'image-modality', textContent:`${serie.Modality}(${serie.NumberOfSeries})`});
+        imageItem.appendChild(imageDate);
+        imageItem.appendChild(imageModality);
+        seriesList.appendChild(imageItem);
+      });
+      // Setup study footer
+      const studyFooter = createDivElement({className: 'study-footer'});
+      const referringPhysician = createDivElement({className: 'referring-physician', textContent:`Physician: ${study.ReferringPhysician}`});
+      const accessionNumber = createDivElement({className: 'accession-number', textContent:`Accession#: ${study.AccessionNumber}`});
+      studyFooter.appendChild(referringPhysician);
+      studyFooter.appendChild(accessionNumber);
+      // Finalize study item
+      studyItem.appendChild(studyHeader);
+      studyItem.appendChild(seriesList);
+      studyItem.appendChild(studyFooter);
+      studyItem.onclick = function() {
+        onStudySelect(index);
+    };
+      studyListContainer.appendChild(studyItem);
+    }
+}
+function setViewportColormap(viewportIds : string[], volumeId, colormapName, renderingEngineId) {
+  const renderingEngine = getRenderingEngine(renderingEngineId);
+  viewportIds.forEach(vpId => {
+    const viewport = <Types.IVolumeViewport>(
+      renderingEngine.getViewport(vpId)
+    );
+    viewport.setProperties({ colormap: { name: colormapName } }, volumeId);
+    viewport.render();
+  });
+}
 export {
     createDivElement,
     setStudyListView,
     selectStudy,
     loadPatientInfo,
     getViewPortByElement,
+    loadSeriesList,
+    setViewportColormap,
 }

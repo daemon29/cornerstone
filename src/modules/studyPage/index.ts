@@ -23,7 +23,7 @@ import { loadWindowLevelTool } from '../../shared/windowTool';
 import { loadColorMapTool, setColorMapSelect } from '../../shared/colormapTool';
 import { loadCrosshairsTool } from '../../shared/crosshairTool';
 import { patientInfo, studyList } from '../../shared/constants';
-import { createDivElement, getViewPortByElement, loadPatientInfo, selectStudy, setStudyListView } from '../../shared/utils';
+import { createDivElement, getViewPortByElement, loadPatientInfo, selectStudy, setStudyListView, setViewportColormap } from '../../shared/utils';
 import { ViewportTypeEnum } from '../../shared/enums';
 const {
   ToolGroupManager,
@@ -265,8 +265,7 @@ function initViewPort(){
   }
   content.appendChild(viewportGrid);
 
-  threeDviewPort = createDivElement();
-  threeDviewPort.id = 'viewport-3d';
+  threeDviewPort = createDivElement({id:'viewport-3d'});
   threeDviewPort.hidden = true;
   threeDviewPort.oncontextmenu = (e) => e.preventDefault();
   threeDviewPort.onclick= ()=> selectGridElement(threeDviewPort);
@@ -710,7 +709,12 @@ async function setVolumesViewportsForStudy(){
     ],
     [viewportIds.CT.AXIAL, viewportIds.CT.SAGITTAL, viewportIds.CT.CORONAL]
   );
-  setViewportColormap([viewportIds.CT.AXIAL, viewportIds.CT.SAGITTAL, viewportIds.CT.CORONAL], ctVolumeId, currentSelectColormapNames[0]);
+  setViewportColormap([
+    viewportIds.CT.AXIAL, viewportIds.CT.SAGITTAL, viewportIds.CT.CORONAL], 
+    ctVolumeId, 
+    currentSelectColormapNames[0],
+    renderingEngineId,
+  );
   await setVolumesForViewports(
     renderingEngine,
     [
@@ -722,7 +726,12 @@ async function setVolumesViewportsForStudy(){
     ],
     [viewportIds.PT.AXIAL, viewportIds.PT.SAGITTAL, viewportIds.PT.CORONAL]
   );
-  setViewportColormap([viewportIds.PT.AXIAL, viewportIds.PT.SAGITTAL, viewportIds.PT.CORONAL], ptVolumeId, currentSelectColormapNames[1]);
+  setViewportColormap([
+    viewportIds.PT.AXIAL, viewportIds.PT.SAGITTAL, viewportIds.PT.CORONAL],
+    ptVolumeId,
+    currentSelectColormapNames[1],
+    renderingEngineId
+  );
   await setVolumesForViewports(
     renderingEngine,
     [
@@ -748,13 +757,16 @@ async function setVolumesViewportsForStudy(){
   setViewportColormap([
     viewportIds.FUSION.AXIAL,
     viewportIds.FUSION.SAGITTAL,
-    viewportIds.FUSION.CORONAL,
-  ], ctVolumeId, currentSelectColormapNames[0]);
+    viewportIds.FUSION.CORONAL],
+    ctVolumeId, currentSelectColormapNames[0],
+    renderingEngineId
+  );
   setViewportColormap([
     viewportIds.FUSION.AXIAL,
     viewportIds.FUSION.SAGITTAL,
-    viewportIds.FUSION.CORONAL,
-  ], ptVolumeId, currentSelectColormapNames[1]);
+    viewportIds.FUSION.CORONAL,], ptVolumeId, currentSelectColormapNames[1],
+    renderingEngineId
+);
   initializeCameraSync(renderingEngine);
   renderingEngine.render();
 }
@@ -827,27 +839,25 @@ function onColorSelection(colorValue){
   if(selectedElement!=null){
     const selectedViewPort = getViewPortByElement(selectedElement.id);
     if(selectedViewPort==ViewportTypeEnum.CTVIEWPORT){
-      setViewportColormap([viewportIds.CT.AXIAL, viewportIds.CT.SAGITTAL, viewportIds.CT.CORONAL,viewportIds.FUSION.AXIAL, viewportIds.FUSION.SAGITTAL, viewportIds.FUSION.CORONAL], ctVolumeId, colorValue);
+      setViewportColormap([viewportIds.CT.AXIAL, viewportIds.CT.SAGITTAL, viewportIds.CT.CORONAL,viewportIds.FUSION.AXIAL, viewportIds.FUSION.SAGITTAL, viewportIds.FUSION.CORONAL], 
+        ctVolumeId, 
+        colorValue,
+        renderingEngineId
+      );
       currentSelectColormapNames[ViewportTypeEnum.CTVIEWPORT] = colorValue;
     } else
     if(selectedViewPort==ViewportTypeEnum.PTVIEWPORT){
-      setViewportColormap([viewportIds.PT.AXIAL, viewportIds.PT.SAGITTAL, viewportIds.PT.CORONAL,viewportIds.FUSION.AXIAL, viewportIds.FUSION.SAGITTAL, viewportIds.FUSION.CORONAL], ptVolumeId, colorValue);
+      setViewportColormap([viewportIds.PT.AXIAL, viewportIds.PT.SAGITTAL, viewportIds.PT.CORONAL,viewportIds.FUSION.AXIAL, viewportIds.FUSION.SAGITTAL, viewportIds.FUSION.CORONAL], 
+        ptVolumeId, 
+        colorValue,
+        renderingEngineId,
+      );
       currentSelectColormapNames[ViewportTypeEnum.PTVIEWPORT] = colorValue;
     }
   }
 }
 // set color for viewport
-function setViewportColormap(viewportIds : string[], volumeId, colormapName) {
-  const renderingEngine = getRenderingEngine(renderingEngineId);
-  viewportIds.forEach(vpId => {
-    const viewport = <Types.IVolumeViewport>(
-      renderingEngine.getViewport(vpId)
-    );
-    viewport.setProperties({ colormap: { name: colormapName } }, volumeId);
-    viewport.render();
-  });
 
-}
 
 function onStudySelect(index: number){
   if(index>=studyList.length)
