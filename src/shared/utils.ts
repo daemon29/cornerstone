@@ -1,3 +1,5 @@
+import { ViewportTypeEnum } from "./enums";
+
 function createDivElement({
     className = '',
     id = '',
@@ -89,9 +91,26 @@ function loadPatientInfo(patientInfo){
     patientInfoContainer.appendChild(patientAgeSex);
 }
 
+function getViewPortByElement(elementID: string){
+  // Each viewport has a ID `viewport${index}`
+  if(elementID=='viewport-3d'){
+    return ViewportTypeEnum.THREEDVIEWPORT;
+  }
+  const viewportNumber = parseInt(elementID.charAt(elementID.length-1));
+
+  if(viewportNumber<=2){
+    /// it is CT viewport
+    return ViewportTypeEnum.CTVIEWPORT;
+  } else if(viewportNumber<=5){
+    /// it is PT viewport
+    return ViewportTypeEnum.PTVIEWPORT;
+  }
+  return ViewportTypeEnum.FUSIONVIEWPORT;
+}
 export {
     createDivElement,
     setStudyListView,
     selectStudy,
     loadPatientInfo,
+    getViewPortByElement,
 }

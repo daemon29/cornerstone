@@ -23,7 +23,8 @@ import { loadWindowLevelTool } from '../../shared/windowTool';
 import { loadColorMapTool, setColorMapSelect } from '../../shared/colormapTool';
 import { loadCrosshairsTool } from '../../shared/crosshairTool';
 import { patientInfo, studyList } from '../../shared/constants';
-import { createDivElement, loadPatientInfo, selectStudy, setStudyListView } from '../../shared/utils';
+import { createDivElement, getViewPortByElement, loadPatientInfo, selectStudy, setStudyListView } from '../../shared/utils';
+import { ViewportTypeEnum } from '../../shared/enums';
 const {
   ToolGroupManager,
   Enums: csToolsEnums,
@@ -45,8 +46,7 @@ const {
 const { MouseBindings, KeyboardBindings} = csToolsEnums;
 const { ViewportType, BlendModes } = Enums;
 
-const { createCameraPositionSynchronizer, createVOISynchronizer } =
-  synchronizers;
+const { createCameraPositionSynchronizer, createVOISynchronizer } = synchronizers;
 
 // Global variables
 let renderingEngine;
@@ -61,12 +61,6 @@ const ptToolGroupId = 'PT_TOOLGROUP_ID';
 const fusionToolGroupId = 'FUSION_TOOLGROUP_ID';
 const threeDToolGroupId = '3D_TOOLGROUP_ID';
 
-const ViewportTypeEnum = {
-  CTVIEWPORT: 0,
-  PTVIEWPORT: 1,
-  FUSIONVIEWPORT: 2,
-  THREEDVIEWPORT: 4,
-}
 let ctImageIds, ptImageIds, ctVolume, ptVolume;
 let registrationMatrix = mat4.create();
 let expandedElement = null; // To track which element is expanded
@@ -356,23 +350,6 @@ function toggleViewportSize(element: HTMLElement) {
   }
   const renderEngine = getRenderingEngine(renderingEngineId);
   renderEngine.resize(true);
-}
-
-function getViewPortByElement(elementID: string){
-  // Each viewport has a ID `viewport${index}`
-  if(elementID=='viewport-3d'){
-    return ViewportTypeEnum.THREEDVIEWPORT;
-  }
-  const viewportNumber = parseInt(elementID.charAt(elementID.length-1));
-
-  if(viewportNumber<=2){
-    /// it is CT viewport
-    return ViewportTypeEnum.CTVIEWPORT;
-  } else if(viewportNumber<=5){
-    /// it is PT viewport
-    return ViewportTypeEnum.PTVIEWPORT;
-  }
-  return ViewportTypeEnum.FUSIONVIEWPORT;
 }
 
 function selectGridElement(element :HTMLElement){
