@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');  // Add this line
 
 module.exports = {
-  mode: 'development',  // You can set 'production' for production builds
+  mode: 'production',  // You can set 'production' for production builds
   entry: {
     studyPage: './src/modules/studyPage/index.ts',
     seriePage: './src/modules/seriePage/index.ts'
@@ -32,6 +32,16 @@ module.exports = {
         test: /\.css$/,  // Add this rule to handle CSS files
         use: ['style-loader', 'css-loader'],  // Injects CSS into the DOM and resolves imports
       },
+      {
+        test: /\.js$/,
+        include: /node_modules\/@cornerstonejs/, // Specifically transpile cornerstonejs if needed
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env']
+          }
+        }
+      }
     ],
   },
   experiments: {
@@ -56,6 +66,7 @@ module.exports = {
       ],
     }),
   ],
+  stats: 'none', // Suppresses all warnings and only shows critical errors in the console
   devServer: {
     hot: true,
     static: path.join(__dirname, 'dist'),
@@ -65,6 +76,9 @@ module.exports = {
     headers: {
       "Cross-Origin-Embedder-Policy": "require-corp",
       "Cross-Origin-Opener-Policy": "same-origin"
-    }
+    },
+    client: {
+      overlay: false,  // Disable error overlays in the browser
+    },
   },
 };

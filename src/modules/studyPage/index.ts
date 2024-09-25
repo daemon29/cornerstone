@@ -6,6 +6,7 @@ import {
   getRenderingEngine,
   Types,
   setUseSharedArrayBuffer,
+  cache,
 } from '@cornerstonejs/core';
 import {
   initDemo,
@@ -392,7 +393,6 @@ function setUpToolGroups() {
   cornerstoneTools.addTool(PanTool);
   cornerstoneTools.addTool(ZoomTool);
   cornerstoneTools.addTool(StackScrollMouseWheelTool);
-  cornerstoneTools.addTool(MIPJumpToClickTool);
   cornerstoneTools.addTool(VolumeRotateMouseWheelTool);
   cornerstoneTools.addTool(CrosshairsTool);
   cornerstoneTools.addTool(TrackballRotateTool);
@@ -776,25 +776,16 @@ function initializeCameraSync(renderingEngine) {
   // TODO -> We should have a more generic way to do this,
   // So that when all data is added we can synchronize zoom/position before interaction.
   const axialCtViewport = renderingEngine.getViewport(viewportIds.CT.AXIAL);
-  const sagittalCtViewport = renderingEngine.getViewport(
-    viewportIds.CT.SAGITTAL
-  );
+  const sagittalCtViewport = renderingEngine.getViewport(viewportIds.CT.SAGITTAL);
   const coronalCtViewport = renderingEngine.getViewport(viewportIds.CT.CORONAL);
   const axialPtViewport = renderingEngine.getViewport(viewportIds.PT.AXIAL);
-  const sagittalPtViewport = renderingEngine.getViewport(
-    viewportIds.PT.SAGITTAL
-  );
+  const sagittalPtViewport = renderingEngine.getViewport(viewportIds.PT.SAGITTAL);
   const coronalPtViewport = renderingEngine.getViewport(viewportIds.PT.CORONAL);
 
-  const axialFusionViewport = renderingEngine.getViewport(
-    viewportIds.FUSION.AXIAL
-  );
-  const sagittalFusionViewport = renderingEngine.getViewport(
-    viewportIds.FUSION.SAGITTAL
-  );
-  const coronalFusionViewport = renderingEngine.getViewport(
-    viewportIds.FUSION.CORONAL
-  );
+  const axialFusionViewport = renderingEngine.getViewport(viewportIds.FUSION.AXIAL);
+  const sagittalFusionViewport = renderingEngine.getViewport(viewportIds.FUSION.SAGITTAL);
+  const coronalFusionViewport = renderingEngine.getViewport(viewportIds.FUSION.CORONAL);
+  
   initCameraSynchronization(axialFusionViewport, axialCtViewport);
   initCameraSynchronization(axialFusionViewport, axialPtViewport);
   initCameraSynchronization(sagittalFusionViewport, sagittalCtViewport);
@@ -811,6 +802,7 @@ function initCameraSynchronization(sViewport, tViewport) {
 }
 
 async function loadStudy(study){
+  await cache.purgeVolumeCache();
   ctImageIds = await createImageIdsAndCacheMetaData({
     StudyInstanceUID: study.CT1StudyInstanceUID,
     SeriesInstanceUID: study.CT1SeriesInstanceUID,
@@ -870,7 +862,7 @@ function onStudySelect(index: number){
 async function run() {
   // Init Cornerstone and related libraries
   await initDemo();
-  setUseSharedArrayBuffer(true);
+  setUseSharedArrayBuffer(false);
   initToolBar();
   initViewPort();
   loadPatientInfo(patientInfo)

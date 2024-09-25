@@ -24,7 +24,7 @@ overflow-y: auto;
   /* Style the toolbar at the top of the content area */
 #demo-toolbar {
   align-items: center;
-  background-color: #6687d9;
+  background-color: #7b88b0;
   height: 4vh;
   padding: 5px;
   color: white;
@@ -340,7 +340,7 @@ height: 100%;
 
 }
 .page-pagination a.active {
-  background-color: #6687d9;
+  background-color: #7b88b0;
   color: white;
 }
 .page-pagination a:hover:not(.active) {
@@ -351,7 +351,7 @@ height: 100%;
 #whole-content-series {
   display: grid;
   padding: 8px;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 1fr;
   gap: 8px;
   height: 93vh;
 }

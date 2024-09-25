@@ -20,10 +20,25 @@ declare const studyList: {
         }[];
     };
 }[];
+declare const seriesList: {
+    wadoRsRoot: string;
+    Title: string;
+    StudyInstanceUID: string;
+    ReferringPhysician: string;
+    StudyDate: string;
+    AccessionNumber: number;
+    SeriesList: {
+        SeriesDate: string;
+        SeriesTime: string;
+        Modality: string;
+        NumberOfSeries: number;
+        SeriesInstanceUID: string;
+    }[];
+}[];
 declare const patientInfo: {
     PatientName: string;
     PatientID: string;
     PatientBirthDate: string;
     PatientSex: string;
 };
-export { studyList, patientInfo, };
+export { studyList, patientInfo, seriesList };
