@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');  // Add this line
 
 module.exports = {
-  mode: 'production',  // You can set 'production' for production builds
+  mode: 'development',  // You can set 'production' for production builds
   entry: {
     studyPage: './src/modules/studyPage/index.ts',
     seriePage: './src/modules/seriePage/index.ts'
@@ -14,7 +14,7 @@ module.exports = {
     clean: true, // Clean the output directory before emitting new files
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx','.d.ts'],
   },
   module: {
     rules: [
@@ -32,16 +32,6 @@ module.exports = {
         test: /\.css$/,  // Add this rule to handle CSS files
         use: ['style-loader', 'css-loader'],  // Injects CSS into the DOM and resolves imports
       },
-      {
-        test: /\.js$/,
-        include: /node_modules\/@cornerstonejs/, // Specifically transpile cornerstonejs if needed
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env']
-          }
-        }
-      }
     ],
   },
   experiments: {

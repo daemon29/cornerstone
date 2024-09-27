@@ -32,6 +32,7 @@ import {
   setStudyListView,
   setViewportColormap,
 } from "../../shared/utils";
+import { getAllowedPatientId } from "../../shared/getAllowedPatientId";
 const {
   ToolGroupManager,
   Enums: csToolsEnums,
@@ -176,20 +177,20 @@ function onColorSelection(colorValue) {
     renderingEngineId
   );
 }
-function select3DView(){
-    const wholeContent = document.getElementById('whole-content-series');
-    const button3D = document.getElementById('button-3d');
-    if(is3DOpen){
-        threeDviewPort.hidden = true;
-        is3DOpen=false;
-        button3D.dataset.isSelected='false'
-        wholeContent.style.gridTemplateRows = "1fr";
-    } else {
-        button3D.dataset.isSelected='true'
-        wholeContent.style.gridTemplateRows = "1fr 1fr";
-        threeDviewPort.hidden = false;
-        is3DOpen = true;
-    }
+function select3DView() {
+  const wholeContent = document.getElementById("whole-content-series");
+  const button3D = document.getElementById("button-3d");
+  if (is3DOpen) {
+    threeDviewPort.hidden = true;
+    is3DOpen = false;
+    button3D.dataset.isSelected = "false";
+    wholeContent.style.gridTemplateRows = "1fr";
+  } else {
+    button3D.dataset.isSelected = "true";
+    wholeContent.style.gridTemplateRows = "1fr 1fr";
+    threeDviewPort.hidden = false;
+    is3DOpen = true;
+  }
 }
 function initRightToolBar() {
   loadColorMapTool(onColorSelection);
@@ -294,34 +295,44 @@ function onStudySelect(index: number) {
   loadStudy(selectedStudy);
 }
 function toggleViewportSize(element: HTMLElement) {
-    if(expandedElement==element){
-      element.style.gridColumn = '';
-      element.style.gridRow = '';
-      element.style.gridColumn = element.dataset.originalGridColumnStart || '';
-      element.style.gridRow = element.dataset.originalGridRowStart || '';
-      element.style.zIndex = '';  // Reset z-index
-      expandedElement = null;
-    }else{
-      if (expandedElement) {
-        expandedElement.style.gridColumn = '';
-        expandedElement.style.gridRow = '';
-        expandedElement.style.zIndex = '';  // Reset z-index
-      }
-      if (!element.dataset.originalGridColumn) {
-        element.dataset.originalGridColumnStart = element.style.gridColumnStart;
-        element.dataset.originalGridRowStart = element.style.gridRowStart;
-      }
-      // Expand the clicked element to span all rows and columns
-      //element.style.gridColumn = '1 / 4';  // Span all 3 columns
-      //element.style.gridRow = '1 / 4';  // Span all 3 rows
-      element.style.zIndex = '1000';  // Bring the element to the front
-      element.style.width = '100%';  // Ensure it takes full width
-      element.style.height = '100%';
-      expandedElement = element;
+  if (expandedElement == element) {
+    element.style.gridColumn = "";
+    element.style.gridRow = "";
+    element.style.gridColumn = element.dataset.originalGridColumnStart || "";
+    element.style.gridRow = element.dataset.originalGridRowStart || "";
+    element.style.zIndex = ""; // Reset z-index
+    expandedElement = null;
+    for (let index = 0; index < elements.length-1; index++) {
+      const e = elements[index];
+      e.hidden = false;
     }
-    const renderEngine = getRenderingEngine(renderingEngineId);
-    renderEngine.resize(true);
+  } else {
+    if (expandedElement) {
+      expandedElement.style.gridColumn = "";
+      expandedElement.style.gridRow = "";
+      expandedElement.style.zIndex = ""; // Reset z-index
+    }
+    if (!element.dataset.originalGridColumn) {
+      element.dataset.originalGridColumnStart = element.style.gridColumnStart;
+      element.dataset.originalGridRowStart = element.style.gridRowStart;
+    }
+    // Expand the clicked element to span all rows and columns
+    element.style.gridColumn = "1 / 4"; // Span all 3 columns
+    element.style.gridRow = "1 / 4"; // Span all 3 rows
+    element.style.zIndex = "1000"; // Bring the element to the front
+    element.style.width = "100%"; // Ensure it takes full width
+    element.style.height = "100%";
+    expandedElement = element;
+    for (let index = 0; index < elements.length-1; index++) {
+      const e = elements[index];
+      if(element!=e){
+        e.hidden = true;
+      }
+    }
   }
+  const renderEngine = getRenderingEngine(renderingEngineId);
+  renderEngine.resize(true);
+}
 function selectGridElement(element: HTMLElement) {
   if (selectedElement) {
     selectedElement.dataset.isSelected = "false";
@@ -349,7 +360,7 @@ function initViewPort() {
   elements.push(threeDviewPort);
   threeDviewPort.hidden = true;
   threeDviewPort.oncontextmenu = (e) => e.preventDefault();
-  threeDviewPort.onclick= ()=> selectGridElement(threeDviewPort);
+  threeDviewPort.onclick = () => selectGridElement(threeDviewPort);
   resizeObserver.observe(threeDviewPort);
   wholeContent.appendChild(threeDviewPort);
   wholeContent.appendChild(content);
@@ -483,21 +494,33 @@ function setUpToolGroups() {
     ],
   });
 }
-async function run() {
-  // Init Cornerstone and related libraries
-  await initDemo();
-  setUseSharedArrayBuffer(false);
-  initToolBar();
-  initViewPort();
-  loadPatientInfo(patientInfo);
-  loadSeriesList(seriesList, onStudySelect);
-  // initial study
-  // Instantiate a rendering engine
-  renderingEngine = new RenderingEngine(renderingEngineId);
 
-  await setUpDisplay();
-  setUpToolGroups();
-  setUpSynchronizers();
+async function checkValidPatientID(): Promise<boolean> {
+  const urlParams = new URLSearchParams(window.location.search);
+  const patientId = urlParams.get("patientId");
+  const allowedPatientId = await getAllowedPatientId();
+  const studiesLink = document.getElementById("studyPage");
+  studiesLink.setAttribute("href", `../index.html?patientId=${patientId}`);
+  return patientId == allowedPatientId;
+}
+
+async function run() {
+  if (await checkValidPatientID()) {
+    // Init Cornerstone and related libraries
+    await initDemo();
+    setUseSharedArrayBuffer(false);
+    initToolBar();
+    initViewPort();
+    loadPatientInfo(patientInfo);
+    loadSeriesList(seriesList, onStudySelect);
+    // initial study
+    // Instantiate a rendering engine
+    renderingEngine = new RenderingEngine(renderingEngineId);
+
+    await setUpDisplay();
+    setUpToolGroups();
+    setUpSynchronizers();
+  }
 }
 
 run();

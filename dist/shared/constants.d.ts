@@ -9,7 +9,7 @@ declare const studyList: {
         Title: string;
         ReferringPhysician: string;
         StudyDate: string;
-        AccessionNumber: number;
+        AccessionNumber: string;
         SeriesList: {
             ImageDate: string;
             ImageTime: string;
@@ -26,7 +26,7 @@ declare const seriesList: {
     StudyInstanceUID: string;
     ReferringPhysician: string;
     StudyDate: string;
-    AccessionNumber: number;
+    AccessionNumber: string;
     SeriesList: {
         SeriesDate: string;
         SeriesTime: string;

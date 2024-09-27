@@ -1,4 +1,4 @@
-declare function createDivElement({ className, id, textContent }?: {
+declare function createDivElement({ className, id, textContent, }?: {
     className?: string;
     id?: string;
     textContent?: string;

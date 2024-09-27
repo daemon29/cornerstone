@@ -10,9 +10,9 @@ const studyList = [
       "1.2.156.112736.1.3.2.1279709348.4668.1704737855.630",
     StudyInfo: {
       Title: "Study 1",
-      ReferringPhysician: "John Doe",
+      ReferringPhysician: "Physician",
       StudyDate: "29-Feb-2024",
-      AccessionNumber: 20240229,
+      AccessionNumber: "",
       SeriesList: [
         {
           ImageDate: "24-Feb-2024",
@@ -56,9 +56,9 @@ const studyList = [
       "1.2.156.112736.1.3.2.1279709348.4668.1704737512.449",
     StudyInfo: {
       Title: "Study 2",
-      ReferringPhysician: "John Doe",
+      ReferringPhysician: "Physician",
       StudyDate: "07-Mar-2024",
-      AccessionNumber: 20240307,
+      AccessionNumber: "",
       SeriesList: [
         {
           ImageDate: "24-Feb-2024",
@@ -97,9 +97,9 @@ const seriesList = [
     wadoRsRoot: "http://localhost:800/dicom-web",
     Title: "Pelvis CT 1",
     StudyInstanceUID: "1.2.156.112736.1.2.2.1097583607.12296.1695818166.610",
-    ReferringPhysician: "John Doe",
+    ReferringPhysician: "Physician",
     StudyDate: "24-Feb-2024",
-    AccessionNumber: 20240224,
+    AccessionNumber: "",
     SeriesList: [
       {
         SeriesDate: "24-Feb-2024",
@@ -123,9 +123,9 @@ const seriesList = [
     wadoRsRoot: "http://localhost:800/dicom-web",
     Title: "Pelvis CT 2",
     StudyInstanceUID: "1.2.156.112736.1.2.2.1279709348.4668.1704737711.457",
-    ReferringPhysician: "John Doe",
+    ReferringPhysician: "Physician",
     StudyDate: "29-Feb-2024",
-    AccessionNumber: 20240229,
+    AccessionNumber: "",
     SeriesList: [
       {
         SeriesDate: "29-Feb-2024",
@@ -141,9 +141,9 @@ const seriesList = [
     wadoRsRoot: "http://localhost:800/dicom-web",
     Title: "Pelvis CT 3",
     StudyInstanceUID: "1.2.156.112736.1.2.2.1279709348.4668.1704737390.276",
-    ReferringPhysician: "John Doe",
+    ReferringPhysician: "Physician",
     StudyDate: "07-Mar-2024",
-    AccessionNumber: 20240307,
+    AccessionNumber: "",
     SeriesList: [
       {
         SeriesDate: "07-Mar-2024",
@@ -157,8 +157,8 @@ const seriesList = [
   },
 ];
 const patientInfo = {
-  PatientName: "Demo ART Workflow2",
-  PatientID: "21SAMPLE",
+  PatientName: "Demo, Image Review",
+  PatientID: "ImageReviewDemo",
   PatientBirthDate: "05-Sep-1955",
   PatientSex: "O",
 };

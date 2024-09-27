@@ -26,6 +26,7 @@ import { loadCrosshairsTool } from '../../shared/crosshairTool';
 import { patientInfo, studyList } from '../../shared/constants';
 import { createDivElement, getViewPortByElement, loadPatientInfo, selectStudy, setStudyListView, setViewportColormap } from '../../shared/utils';
 import { ViewportTypeEnum } from '../../shared/enums';
+import { getAllowedPatientId } from '../../shared/getAllowedPatientId';
 const {
   ToolGroupManager,
   Enums: csToolsEnums,
@@ -859,8 +860,19 @@ function onStudySelect(index: number){
   loadStudy(selectedStudy);
 }
 
+async function checkValidPatientID():Promise<boolean>{
+  const urlParams = new URLSearchParams(window.location.search);
+  const patientId = urlParams.get('patientId');
+  const allowedPatientId = await getAllowedPatientId();
+
+  const seriesLink = document.getElementById('seriePage');
+  seriesLink.setAttribute('href', `seriePage?patientId=${patientId}`);
+
+  return patientId==allowedPatientId;
+}
 async function run() {
-  // Init Cornerstone and related libraries
+  if(await checkValidPatientID()){
+      // Init Cornerstone and related libraries
   await initDemo();
   setUseSharedArrayBuffer(false);
   initToolBar();
@@ -878,6 +890,11 @@ async function run() {
   // Tools and synchronizers can be set up in any order.
   setUpToolGroups();
   setUpSynchronizers();
-}
+  }
 
+}
+document.getElementById('measure-select-button').addEventListener('click', function() {
+  const dropdownOptions = document.getElementById('measure-select');
+  dropdownOptions.classList.toggle('show');
+});
 run();

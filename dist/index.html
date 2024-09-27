@@ -1,1 +1,67 @@
-<!doctype html><html lang="en"><head><meta http-equiv="Content-type" content="text/html; charset=utf-8"/><meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/><link rel="stylesheet" href="assets/styles.css"><script defer="defer" src="studyPage.js"></script></head><body><div id="layout"><div id="left-menu"><div class="page-pagination"><a href="" class="active">Studies</a> <a href="seriePage">Series</a></div><div id="patient-info-container" class="patient-info"></div><div id="study-list-container" class="study-list-container"></div></div><div id="main-content"><div id="demo-toolbar"><div id="toolbar-left" class="toolbar-left"><div id="MeasureTool" class="icon-select-wrapper"><img id="measure-img" src="./assets/ruler.png" alt="Icon" class="icon-img"> <select id="measure-select" class="icon-select"><option value="" disabled="disabled" selected="selected">Measure</option></select></div><button id="Crosshairs" class="icon-button"><img src="./assets/crosshair.png" alt="Icon" class="icon-img"> <span class="button-text">Crosshair</span></button> <button id="WindowLevel" class="icon-button"><img src="./assets/contrast.png" alt="Icon" class="icon-img"> <span class="button-text">Levels</span></button></div><div class="toolbar-divider"></div><div id="toolbar-right" class="toolbar-right"><div class="icon-select-wrapper"><img src="./assets/colour.png" alt="Icon" class="icon-img"> <select id="colormap-select" class="icon-select"><option value="" disabled="disabled" selected="selected">Select color map</option></select></div><div class="slider-container" style="display: flex;"><span>Opacity</span> <input id="slider-opacity" type="range"></div><button id="contour-button" class="icon-button"><img src="./assets/contour.png" alt="Icon" class="icon-img"> <span class="button-text">Contour</span></button> <button id="button-3d" class="icon-button"><img src="./assets/3d.png" alt="Icon" class="icon-img"> <span class="button-text">3D View</span></button></div></div><div id="whole-content"><div id="content"></div></div></div></div></body></html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
+    />
+    <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="studyPage.js"></script></head>
+  <body>
+    <!-- Main layout grid with two columns -->
+    <div id="layout">
+      <!-- Left menu container -->
+      <div id="left-menu">
+        <div class="page-pagination">
+          <a id="studyPage" href="" class="active">Studies</a>
+          <a id="seriePage" href="seriePage">Series</a>
+        </div>
+      </div>
+      <!-- Right content container -->
+      <div id="main-content">
+        <!-- Toolbar at the top -->
+        <div id="demo-toolbar">
+          <div id="toolbar-left" class="toolbar-left">
+            <div id ="MeasureTool" class="icon-select-wrapper">
+              <img id="measure-img" src="./assets/ruler.png" alt="Icon" class="icon-img">
+              <select id="measure-select" class="icon-select">
+                <option value="" disabled selected>Measure</option>
+              </select>
+            </div>
+            <button id="Crosshairs" class="icon-button">
+              <img src="./assets/crosshair.png" alt="Icon" class="icon-img">
+              <span class="button-text">Crosshair</span>
+            </button>                
+            <button id="WindowLevel" class="icon-button">
+              <img src="./assets/contrast.png" alt="Icon" class="icon-img">
+              <span class="button-text">Levels</span>
+            </button>
+          </div>
+          <div class="toolbar-divider"></div>
+          <div id="toolbar-right" class="toolbar-right">
+            <div class="icon-select-wrapper">
+              <img src="./assets/colour.png" alt="Icon" class="icon-img">
+              <select id="colormap-select" class="icon-select">
+                <option value="" disabled selected>Select color map</option>
+              </select>
+            </div>
+            <button id="button-3d" class="icon-button">
+              <img src="./assets/3d.png" alt="Icon" class="icon-img">
+              <span class="button-text">3D View</span>
+            </button>
+            <div class="slider-container" style="display: flex;">
+              <span>Opacity</span>
+              <input id="slider-opacity" type="range"></input>
+            </div>
+          </div>
+        </div>
+        <!-- Main content area -->
+        <div id="whole-content">
+          <div id="content">
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

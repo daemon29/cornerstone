@@ -3,6 +3,10 @@ margin: 0;
 padding: 0;
 height: 100%;
 display: grid;
+-webkit-user-select: none;  /* Safari */
+-moz-user-select: none;     /* Firefox */
+-ms-user-select: none;      /* Internet Explorer/Edge */
+user-select: none;          
 }
 
   /* Use a grid layout with two columns: a fixed width left column and a flexible right column */
