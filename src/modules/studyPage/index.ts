@@ -74,7 +74,7 @@ let selectedElement : HTMLElement;
 let is3DOpen = false;
 
 // Color Map Section
-const currentSelectColormapNames = ['Grayscale', '2hot'];
+const currentSelectColormapNames = ['', ''];
 
 let selectedStudy;
 
@@ -893,8 +893,8 @@ async function run() {
   }
 
 }
+run();
 document.getElementById('measure-select-button').addEventListener('click', function() {
   const dropdownOptions = document.getElementById('measure-select');
   dropdownOptions.classList.toggle('show');
 });
-run();

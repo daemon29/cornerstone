@@ -23,11 +23,19 @@
         <!-- Toolbar at the top -->
         <div id="demo-toolbar">
           <div id="toolbar-left" class="toolbar-left">
-            <div id ="MeasureTool" class="icon-select-wrapper">
-              <img id="measure-img" src="./assets/ruler.png" alt="Icon" class="icon-img">
-              <select id="measure-select" class="icon-select">
-                <option value="" disabled selected>Measure</option>
-              </select>
+            <div class="icon-button-wrapper">
+              <button id="MeasureTool" class="icon-button icon-button-select" >
+                <img id="measure-img" src="./assets/ruler.png" alt="Icon" class="icon-img">
+                <span class="button-text">Measure Tools</span>
+              </button>
+              <button class="dropdown-button" id="measure-select-button">
+                ▼ <!-- This is the chevron down icon, you can replace it with an SVG or icon font -->
+              </button>
+              <ul class="dropdown-options" id="measure-select">
+                <li>Option 1</li>
+                <li>Option 2</li>
+                <li>Option 3</option>
+              </ul>
             </div>
             <button id="Crosshairs" class="icon-button">
               <img src="./assets/crosshair.png" alt="Icon" class="icon-img">
@@ -35,7 +43,7 @@
             </button>                
             <button id="WindowLevel" class="icon-button">
               <img src="./assets/contrast.png" alt="Icon" class="icon-img">
-              <span class="button-text">Levels</span>
+              <span class="button-text">Window Levels</span>
             </button>
           </div>
           <div class="toolbar-divider"></div>
@@ -50,10 +58,11 @@
               <img src="./assets/3d.png" alt="Icon" class="icon-img">
               <span class="button-text">3D View</span>
             </button>
-            <div class="slider-container" style="display: flex;">
+            <div class="slider-container">
               <span>Opacity</span>
               <input id="slider-opacity" type="range"></input>
             </div>
+
           </div>
         </div>
         <!-- Main content area -->

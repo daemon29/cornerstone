@@ -38,14 +38,14 @@ overflow-y: auto;
 }
 .toolbar-left{
   display: flex;
-  gap: 5px;  /* Add space between items */
+  gap: 3px;  /* Add space between items */
   align-items: center;
   justify-content: end;
   width: 50%; /* Both sections take up equal space */
 }
 .toolbar-right {
   display: flex;
-  gap: 5px;  /* Add space between items */
+  gap: 3px;  /* Add space between items */
   align-items: center;
   justify-content: start;
   width: 50%; /* Both sections take up equal space */
@@ -99,17 +99,35 @@ height: 100%;
 .icon-button {
   background-color: white; /* Background color for custom button */
   color: black; /* Text color for custom button */
-  font-weight: 600;
   font-size: 16px;
   padding: 5px; /* Padding for the custom button */
   display: flex; /* Flexbox for icon and text alignment */
   align-items: center; /* Center align vertically */
   border-radius: 5px; /* Rounded corners for custom button */
+  position: relative;
+  cursor: pointer; /* Change cursor to hand */
+  border: 0.5 solid black;
+}
+.button-text {
+  display: none;
+  position: absolute;
+  top: 100%; /* Position below the icon */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #6687d9; /* Background color for the tooltip */
+  color: #fff; /* Text color */
+  padding: 5px 10px;
+  border-radius: 5px;
+  white-space: nowrap;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  z-index: 10; /* Ensure it appears on top */
+  margin-top: 8px; /* Space between icon and tooltip */
 }
 
-.icon-button img {
-  margin-right: 8px; /* Space between icon and text */
+.icon-button:hover .button-text {
+  display: block;
 }
+
 
 /* Style for the icon image inside the custom button */
 .icon-img {
@@ -178,7 +196,6 @@ height: 100%;
 
 .slider-container {
   background-color: white;
-  width: 200px;
   color: black;
   font-weight: 600;
   font-size: 16px;
@@ -370,4 +387,61 @@ height: 100%;
   width: 100%;
   height: 100%;
   gap: 8px;
+}
+
+
+.icon-button-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.dropdown-button {
+  width: 8px;
+  height: 38px;
+  background-color: white;
+  position: relative;
+  color: black;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border: 0.5 solid black;
+  border-left: none;
+}
+
+.dropdown-options {
+  display: none;
+  position: absolute;
+  top: 40px; /* Adjust based on your layout */
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  color: black;
+  list-style-type: none;
+  padding: 5px;
+  margin: 0;
+  width: 100px;
+  z-index: 10;
+}
+
+.dropdown-options li {
+  padding: 10px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.dropdown-options li:hover {
+  background-color: #f0f0f0;
+}
+
+.show {
+  display: block; /* Show the dropdown */
+}
+.icon-button-select {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+  border-right:none
 }
