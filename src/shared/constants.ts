@@ -4,6 +4,11 @@ const studyList = [
     CT1StudyInstanceUID: "1.2.156.112736.1.2.2.1097583607.12296.1695818166.610",
     CT1SeriesInstanceUID:
       "1.2.840.113729.1.4237.9996.2023.9.15.17.48.36.250.10076",
+    CT1SEG:{
+      StudyInstanceUID: "1.2.156.112736.1.2.2.1097583607.12296.1695818166.610",
+      SeriesInstanceUID:"2.25.213554271536925681455938993743687803887",
+      SOPInstanceUID:"2.25.785621413420210661154836003517139088711"
+    },
     CT2StudyInstanceUID: "1.2.156.112736.1.2.2.1279709348.4668.1704737711.457",
     CT2SeriesInstanceUID: "1.2.156.112736.1.3.2.1279709348.4668.1704737828.462",
     CT2RegSeriesInstanceUID:
@@ -20,11 +25,11 @@ const studyList = [
           ImagingList: [
             {
               Modalities: "CT",
-              NumberOfSeries: 126,
+              NumberOfSeries: 125,
             },
             {
-              Modalities: "RTSTRUCT",
-              NumberOfSeries: 8,
+              Modalities: "SEG",
+              NumberOfSeries: 4,
             },
           ],
         },
@@ -50,6 +55,11 @@ const studyList = [
     CT1StudyInstanceUID: "1.2.156.112736.1.2.2.1097583607.12296.1695818166.610",
     CT1SeriesInstanceUID:
       "1.2.840.113729.1.4237.9996.2023.9.15.17.48.36.250.10076",
+    CT1SEG:{
+      StudyInstanceUID: "1.2.156.112736.1.2.2.1097583607.12296.1695818166.610",
+      SeriesInstanceUID:"2.25.213554271536925681455938993743687803887",
+      SOPInstanceUID:"2.25.785621413420210661154836003517139088711"
+    },
     CT2StudyInstanceUID: "1.2.156.112736.1.2.2.1279709348.4668.1704737390.276",
     CT2SeriesInstanceUID: "1.2.156.112736.1.3.2.1279709348.4668.1704737485.281",
     CT2RegSeriesInstanceUID:
@@ -66,11 +76,11 @@ const studyList = [
           ImagingList: [
             {
               Modalities: "CT",
-              NumberOfSeries: 126,
+              NumberOfSeries: 125,
             },
             {
-              Modalities: "RTSTRUCT",
-              NumberOfSeries: 8,
+              Modalities: "SEG",
+              NumberOfSeries: 4,
             },
           ],
         },
@@ -80,7 +90,7 @@ const studyList = [
           ImagingList: [
             {
               Modalities: "CT",
-              NumberOfSeries: 79,
+              NumberOfSeries: 78,
             },
             {
               Modalities: "REG",
@@ -112,10 +122,11 @@ const seriesList = [
       {
         SeriesDate: "24-Feb-2024",
         SeriesTime: "10:05 AM",
-        Modality: "RTSTRUCT",
-        NumberOfSeries: 8,
-        SeriesInstanceUID:
-          "1.2.840.113729.1.4237.9996.2023.9.15.17.48.36.516.10466",
+        Modality: "SEG",
+        NumberOfSeries: 4,
+        SeriesInstanceUID: "2.25.213554271536925681455938993743687803887",
+        SOPInstanceUID: "2.25.785621413420210661154836003517139088711",
+    
       },
     ],
   },
@@ -149,7 +160,7 @@ const seriesList = [
         SeriesDate: "07-Mar-2024",
         SeriesTime: "10:26 AM",
         Modality: "CT",
-        NumberOfSeries: 79,
+        NumberOfSeries: 78,
         SeriesInstanceUID:
           "1.2.156.112736.1.3.2.1279709348.4668.1704737485.281",
       },
@@ -157,8 +168,8 @@ const seriesList = [
   },
 ];
 const patientInfo = {
-  PatientName: "Demo, Image Review",
-  PatientID: "ImageReviewDemo",
+  PatientName: "Jackson Todd",
+  PatientID: "26SAMPLE",
   PatientBirthDate: "05-Sep-1955",
   PatientSex: "O",
 };

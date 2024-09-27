@@ -235,22 +235,24 @@ const colorList = [
     "rainbow"
     ];
 export default colorList;
-function loadColorMapTool(onColorSelection: (selectedValue: string) => void){
-    let colorMapSelect = document.getElementById('colormap-select') as HTMLSelectElement;
+function loadColorMapTool(onColorSelection?: (selectedValue: string) => void){
+    let colorMapSelect = document.getElementById('colormap-select') as HTMLUListElement;
     colorList.forEach(element => {
-      var option =  document.createElement('option');
-      option.text = element;
-      option.value =element;
+      var option =  document.createElement('li');
+      option.textContent = element;
+      option.onclick=()=>{
+        colorMapSelect.dataset.color=option.textContent;
+        colorMapSelect.classList.toggle('show');
+        if(onColorSelection)  onColorSelection(option.textContent);
+      }
       colorMapSelect.appendChild(option);
     });
-    colorMapSelect.onchange = function() {
-        onColorSelection(colorMapSelect.value);
-    };
+
   }
 
 function setColorMapSelect(color:string){
-    const colorMapSelect = document.getElementById('colormap-select') as HTMLSelectElement;
-    colorMapSelect.value=color;
+    const colorMapSelect = document.getElementById('colormap-select');
+    colorMapSelect.dataset.color=color;
 }
 export {
     loadColorMapTool,

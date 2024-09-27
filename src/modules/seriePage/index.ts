@@ -7,32 +7,32 @@ import {
   Types,
   setUseSharedArrayBuffer,
   cache,
+  metaData,
 } from "@cornerstonejs/core";
 import {
   initDemo,
   addButtonToToolbar,
   createImageIdsAndCacheMetaData,
   setCtTransferFunctionForVolumeActor,
-  addSliderToToolbar,
-  readDicomRegData,
-  createElement,
 } from "../../utils/demo/helpers";
 import * as cornerstoneTools from "@cornerstonejs/tools";
-import { mat4 } from "gl-matrix";
 import { loadMeasurementTool } from "../../shared/measurementTool";
 import { loadWindowLevelTool } from "../../shared/windowTool";
-import { loadColorMapTool, setColorMapSelect } from "../../shared/colormapTool";
+import { loadColorMapTool } from "../../shared/colormapTool";
 import { loadCrosshairsTool } from "../../shared/crosshairTool";
-import { patientInfo, seriesList, studyList } from "../../shared/constants";
+import { patientInfo, seriesList } from "../../shared/constants";
 import {
   createDivElement,
   loadPatientInfo,
   loadSeriesList,
   selectStudy,
-  setStudyListView,
   setViewportColormap,
 } from "../../shared/utils";
 import { getAllowedPatientId } from "../../shared/getAllowedPatientId";
+import { api } from "dicomweb-client";
+import * as cornerstoneAdapters from "@cornerstonejs/adapters";
+import { loadLabelMapTool, setLabelMapEnable } from "../../shared/labelMapTool";
+import { load3DTool } from "../../shared/3dTool";
 const {
   ToolGroupManager,
   Enums: csToolsEnums,
@@ -48,12 +48,15 @@ const {
   HeightTool,
   AngleTool,
   EraserTool,
+  SegmentationDisplayTool,
 } = cornerstoneTools;
 
 const { MouseBindings, KeyboardBindings } = csToolsEnums;
-const { ViewportType, BlendModes } = Enums;
+const { ViewportType } = Enums;
+const { adaptersSEG } = cornerstoneAdapters;
+const { Cornerstone3D } = adaptersSEG;
 
-const { createCameraPositionSynchronizer, createVOISynchronizer } =
+const { createVOISynchronizer } =
   synchronizers;
 
 // Global variables
@@ -64,6 +67,8 @@ const ctVolumeName = "CT_VOLUME_ID"; // Id of the volume less loader prefix
 const ctVolumeId = `${volumeLoaderScheme}:${ctVolumeName}`; // VolumeId with loader id + volume id
 const ctToolGroupId = "CT_TOOLGROUP_ID";
 const threeDToolGroupId = "3D_TOOLGROUP_ID";
+const segmentationId = "MY_SEGMENTATION_ID";
+let activeSegmentationRepresentationUID;
 
 let ctImageIds, ctVolume;
 let expandedElement: HTMLElement; // To track which element is expanded
@@ -71,7 +76,6 @@ let viewportColors,
   viewportReferenceLineControllable,
   viewportReferenceLineDraggableRotatable,
   viewportReferenceLineSlabThicknessControlsOn;
-const currentSelectColormapName = "Grayscale";
 const elements: HTMLElement[] = [];
 let selectedElement: HTMLElement;
 let threeDviewPort: HTMLElement;
@@ -82,6 +86,7 @@ const ctVoiSynchronizerId = "CT_VOI_SYNCHRONIZER_ID";
 let ctVoiSynchronizer;
 
 let selectedStudy;
+let selectedPreset = "CT-Bones";
 
 const viewportIds = ["CT_AXIAL", "CT_SAGGITAL", "CT_CORONAL", "CT_3D"];
 
@@ -192,16 +197,36 @@ function select3DView() {
     is3DOpen = true;
   }
 }
+function on3DPresetChange(newPreset: string){
+  selectedPreset = newPreset;
+  const threeD = renderingEngine.getViewport(viewportIds[3]);
+  threeD.setProperties({
+    preset: selectedPreset,
+  });
+  threeD.render();
+}
 function initRightToolBar() {
   loadColorMapTool(onColorSelection);
-  addButtonToToolbar({
-    title: "3D View",
-    id: "button-3d",
-    onClick: () => {
-      // TODO:
-      select3DView();
-    },
-  });
+  load3DTool(select3DView,on3DPresetChange)
+  loadLabelMapTool(onSelectLabelMap);
+}
+async function onSelectLabelMap(){
+  const contourButton = document.getElementById("button-labelmap");
+  if(contourButton.dataset.isSelected=='true'){
+    await cornerstoneTools.segmentation.removeSegmentationsFromToolGroup(ctToolGroupId, [activeSegmentationRepresentationUID]);
+    contourButton.dataset.isSelected='false';
+    renderingEngine.render();
+    return
+  }
+  const [segmentationRepresentationUID] =
+   await cornerstoneTools.segmentation.addSegmentationRepresentations(ctToolGroupId, [
+    {
+      segmentationId,
+      type: csToolsEnums.SegmentationRepresentations.Labelmap
+    }
+  ]);
+  activeSegmentationRepresentationUID = segmentationRepresentationUID;
+  contourButton.dataset.isSelected='true';
 }
 
 async function setUpDisplay() {
@@ -254,17 +279,17 @@ async function setVolumesViewportsForStudy() {
     ],
     [viewportIds[0], viewportIds[1], viewportIds[2], viewportIds[3]]
   );
-  let threeD = renderingEngine.getViewport(viewportIds[3]);
+  const threeD = renderingEngine.getViewport(viewportIds[3]);
   threeD.setProperties({
-    preset: "CT-Bone",
+    preset: selectedPreset,
   });
-  threeD.render();
   renderingEngine.render();
 }
 
 async function loadStudy(study) {
   // Clean up volume cache so it can load new one
   cache.purgeVolumeCache();
+  let hasSeg = false;
   for (let index = 0; index < study.SeriesList.length; index++) {
     const element = study.SeriesList[index];
     switch (element.Modality) {
@@ -275,7 +300,14 @@ async function loadStudy(study) {
           wadoRsRoot: study.wadoRsRoot,
         });
         break;
-      case "RTSTRUCT":
+      case "SEG":
+        fetchSegmentation(
+          study.wadoRsRoot,
+          study.StudyInstanceUID,
+          element.SeriesInstanceUID,
+          element.SOPInstanceUID,
+        );
+        hasSeg = true;
         // RTStruct go here
         break;
       default:
@@ -286,8 +318,67 @@ async function loadStudy(study) {
     imageIds: ctImageIds,
   });
   await setVolumesViewportsForStudy();
+  setLabelMapEnable(hasSeg);
 }
+async function fetchSegmentation(
+  wadoRsRoot?: string,
+  studyInstanceUID?:string,
+  seriesInstanceUID?: string,
+  sopInstanceUID?: string,
+) {
+  if (!ctVolumeId) {
+    return;
+  }
+  const client = new api.DICOMwebClient({
+    url: wadoRsRoot,
+    singlepart: false
+  });
+  const arrayBuffer = await client.retrieveInstance({
+    studyInstanceUID: studyInstanceUID,
+    seriesInstanceUID: seriesInstanceUID,
+    sopInstanceUID: sopInstanceUID,
+  });
 
+  await loadSegmentation(arrayBuffer);
+}
+async function loadSegmentation(arrayBuffer: ArrayBuffer) {
+  // Generate segmentation id
+  const generateToolState =
+    await Cornerstone3D.Segmentation.generateToolState(
+      ctImageIds,
+      arrayBuffer,
+      metaData
+    );
+
+  const derivedVolume = await addSegmentationsToState(segmentationId);
+
+  const derivedVolumeScalarData = derivedVolume.getScalarData();
+
+  derivedVolumeScalarData.set(
+    new Uint8Array(generateToolState.labelmapBufferArray[0])
+  );
+}
+async function addSegmentationsToState(segmentationId: string) {
+  // Create a segmentation of the same resolution as the source data
+  const derivedVolume =
+    await volumeLoader.createAndCacheDerivedSegmentationVolume(ctVolumeId, {
+      volumeId: segmentationId
+    });
+
+  // Add the segmentations to state
+  cornerstoneTools.segmentation.addSegmentations([
+    {
+      segmentationId,
+      representation: {
+        type: csToolsEnums.SegmentationRepresentations.Labelmap,
+        data: {
+          volumeId: segmentationId
+        }
+      }
+    }
+  ]);
+  return derivedVolume;
+}
 function onStudySelect(index: number) {
   if (index >= seriesList.length) return;
   selectedStudy = seriesList[index];
@@ -300,7 +391,6 @@ function toggleViewportSize(element: HTMLElement) {
     element.style.gridRow = "";
     element.style.gridColumn = element.dataset.originalGridColumnStart || "";
     element.style.gridRow = element.dataset.originalGridRowStart || "";
-    element.style.zIndex = ""; // Reset z-index
     expandedElement = null;
     for (let index = 0; index < elements.length-1; index++) {
       const e = elements[index];
@@ -310,7 +400,6 @@ function toggleViewportSize(element: HTMLElement) {
     if (expandedElement) {
       expandedElement.style.gridColumn = "";
       expandedElement.style.gridRow = "";
-      expandedElement.style.zIndex = ""; // Reset z-index
     }
     if (!element.dataset.originalGridColumn) {
       element.dataset.originalGridColumnStart = element.style.gridColumnStart;
@@ -319,7 +408,6 @@ function toggleViewportSize(element: HTMLElement) {
     // Expand the clicked element to span all rows and columns
     element.style.gridColumn = "1 / 4"; // Span all 3 columns
     element.style.gridRow = "1 / 4"; // Span all 3 rows
-    element.style.zIndex = "1000"; // Bring the element to the front
     element.style.width = "100%"; // Ensure it takes full width
     element.style.height = "100%";
     expandedElement = element;
@@ -429,6 +517,8 @@ function setUpToolGroups() {
   cornerstoneTools.addTool(AngleTool);
   cornerstoneTools.addTool(HeightTool);
   cornerstoneTools.addTool(EraserTool);
+  cornerstoneTools.addTool(SegmentationDisplayTool);
+
   const ctToolGroup = ToolGroupManager.createToolGroup(ctToolGroupId);
   const threeDToolGRoup = ToolGroupManager.createToolGroup(threeDToolGroupId);
 
@@ -466,6 +556,8 @@ function setUpToolGroups() {
   });
   ctToolGroup.setToolActive(StackScrollMouseWheelTool.toolName);
   ctToolGroup.setToolPassive(CrosshairsTool.toolName);
+  ctToolGroup.addTool(SegmentationDisplayTool.toolName);
+  ctToolGroup.setToolEnabled(SegmentationDisplayTool.toolName);
 
   // Config tool for 3D viewport tool group
   threeDToolGRoup.addTool(PanTool.toolName);
@@ -516,11 +608,25 @@ async function run() {
     // initial study
     // Instantiate a rendering engine
     renderingEngine = new RenderingEngine(renderingEngineId);
-
+    selectGridElement
     await setUpDisplay();
     setUpToolGroups();
     setUpSynchronizers();
+    onStudySelect(0);
+    onSelectTool(WindowLevelTool.toolName);
   }
 }
 
 run();
+document.getElementById('measure-select-button').addEventListener('click', function() {
+  const dropdownOptions = document.getElementById('measure-select');
+  dropdownOptions.classList.toggle('show');
+});
+document.getElementById('colormap-select-button').addEventListener('click', function() {
+  const dropdownOptions = document.getElementById('colormap-select');
+  dropdownOptions.classList.toggle('show');
+});
+document.getElementById('button-3d-dropdown').addEventListener('click', function() {
+  const dropdownOptions = document.getElementById('button-3d-select');
+  dropdownOptions.classList.toggle('show');
+});

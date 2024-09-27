@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');  // Add this line
 
 module.exports = {
-  mode: 'development',  // You can set 'production' for production builds
+  mode: 'production',  // You can set 'production' for production builds
   entry: {
     studyPage: './src/modules/studyPage/index.ts',
     seriePage: './src/modules/seriePage/index.ts'
